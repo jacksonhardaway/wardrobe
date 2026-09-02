@@ -7,6 +7,8 @@ import com.hypixel.hytale.assetstore.map.JsonAssetWithMap;
 import com.hypixel.hytale.codec.lookup.Priority;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.ComponentType;
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.protocol.*;
 import com.hypixel.hytale.server.core.asset.HytaleAssetStore;
@@ -16,6 +18,9 @@ import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.server.OpenCustomUIInteraction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
+import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
+import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import dev.hardaway.wardrobe.api.cosmetic.appearance.Appearance;
 import dev.hardaway.wardrobe.api.cosmetic.appearance.TextureConfig;
@@ -59,11 +64,15 @@ public class WardrobePlugin extends JavaPlugin {
             ServerCameraSettings camera = WardrobeCamera.DEFAULT_CAMERA.toServerSettings(ref, componentAccessor);
 
             if (blockPosition != null) {
-                int rotationIndex = commandBuffer.getExternalData().getWorld().getBlockRotationIndex(blockPosition.x, blockPosition.y, blockPosition.z) + 2;
+                World world = commandBuffer.getExternalData().getWorld();
+                Ref<ChunkStore> sectionRef = world.getChunkStore().getChunkSectionReference(ChunkUtil.chunkCoordinate(blockPosition.x), ChunkUtil.indexSection(blockPosition.y), ChunkUtil.chunkCoordinate(blockPosition.z));
+                BlockSection blockSection = world.getChunkStore().getStore().getComponent(sectionRef, BlockSection.getComponentType());
+                int blockIndex = ChunkUtil.indexBlock(blockPosition.x, blockPosition.y, blockPosition.z);
+                int rotationIndex = blockSection.getRotationIndex(blockIndex) + 2;
                 float rotation = (float) ((Math.PI / 2) * rotationIndex);
 
                 Transform transform = commandBuffer.ensureAndGetComponent(ref, TransformComponent.getComponentType()).getTransform();
-                commandBuffer.getExternalData().getWorld().execute(() -> {
+                world.execute(() -> {
                     transform.getRotation().setY((float) (rotation + Math.PI));
                     Teleport teleport = Teleport.createForPlayer(transform);
                     commandBuffer.addComponent(ref, Teleport.getComponentType(), teleport);
