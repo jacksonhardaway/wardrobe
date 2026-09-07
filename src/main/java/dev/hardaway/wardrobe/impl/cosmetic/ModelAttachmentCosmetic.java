@@ -26,6 +26,7 @@ import dev.hardaway.wardrobe.impl.cosmetic.appearance.VariantAppearance;
 import dev.hardaway.wardrobe.impl.cosmetic.appearance.VariantAppearanceEntry;
 import dev.hardaway.wardrobe.impl.cosmetic.builtin.HytaleCosmetic;
 import dev.hardaway.wardrobe.impl.cosmetic.texture.GradientTextureConfig;
+import dev.hardaway.wardrobe.impl.cosmetic.texture.SkinTextureConfig;
 import dev.hardaway.wardrobe.impl.cosmetic.texture.VariantTextureConfig;
 
 import javax.annotation.Nullable;
@@ -210,6 +211,9 @@ public class ModelAttachmentCosmetic extends CosmeticAsset implements Appearance
         String variant = playerCosmetic.getVariantId();
         if (appearance.getTextureConfig(option).getTexture(variant) == null) {
             variant = appearance.getTextureConfig(option).collectVariants()[0];
+        }
+        if (appearance.getTextureConfig(option) instanceof SkinTextureConfig) {
+            variant = context.getPlayerModel().getGradientId();
         }
 
         TextureConfig textureConfig = appearance.getTextureConfig(option);
