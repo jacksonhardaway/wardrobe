@@ -159,8 +159,8 @@ public class ModelAttachmentCosmetic extends CosmeticAsset implements Appearance
     }
 
     @Override
-    public void applyCosmetic(WardrobeContext context, WardrobeCosmeticSlot slot, PlayerCosmetic playerCosmetic) {
-        super.applyCosmetic(context, slot, playerCosmetic);
+    public void applyCosmetic(WardrobeContext context, WardrobeCosmeticSlot slot, PlayerCosmetic playerCosmetic, @Nullable String gradientSet, @Nullable String gradientId) {
+        super.applyCosmetic(context, slot, playerCosmetic, gradientSet, gradientId);
         Appearance appearance = this.getAppearance();
 
         if (slot.getArmorSlot() != null && this.getArmorAppearance() != null) {
@@ -207,12 +207,13 @@ public class ModelAttachmentCosmetic extends CosmeticAsset implements Appearance
             option = appearance.collectVariants()[0];
         }
 
-        String variant = playerCosmetic.getVariantId();
+        String variant = gradientId == null ? playerCosmetic.getVariantId() : gradientId;
         if (appearance.getTextureConfig(option).getTexture(variant) == null) {
             variant = appearance.getTextureConfig(option).collectVariants()[0];
         }
 
         TextureConfig textureConfig = appearance.getTextureConfig(option);
+        System.out.println("textureConfig: " + textureConfig.getGradientFrom());
         context.addAttachment(slot.getId(), new ModelAttachment(
                 appearance.getModel(option),
                 textureConfig.getTexture(variant),

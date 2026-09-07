@@ -15,5 +15,10 @@ public interface TextureConfig {
         return null;
     }
 
+    @Nullable
+    default String getGradientFrom() {
+        return null;
+    }
+
     String[] collectVariants();
 }

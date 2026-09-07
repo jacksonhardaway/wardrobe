@@ -82,12 +82,14 @@ public class PlayerWardrobeComponent implements PlayerWardrobe, Component<Entity
         }
 
         if (CosmeticAsset.getAssetMap().getAsset(cosmetic.getCosmeticId()) instanceof PlayerModelCosmetic) {
-            for (Map.Entry<String, CosmeticSaveData> entry : this.cosmetics.entrySet()) {
-                String slotId = entry.getKey();
+            Iterator<Map.Entry<String, CosmeticSaveData>> iterator = this.cosmetics.entrySet().iterator();
+
+            while (iterator.hasNext()) {
+                Map.Entry<String, CosmeticSaveData> entry = iterator.next();
                 CosmeticSaveData existingCosmetic = entry.getValue();
 
                 if (CosmeticAsset.getAssetMap().getAsset(existingCosmetic.getCosmeticId()) instanceof PlayerModelCosmetic) {
-                    this.cosmetics.remove(slotId);
+                    iterator.remove();
                     this.cosmeticIdSet.remove(existingCosmetic.getCosmeticId());
                 }
             }

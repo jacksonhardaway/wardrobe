@@ -25,11 +25,13 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import dev.hardaway.wardrobe.WardrobeUtil;
+import dev.hardaway.wardrobe.api.cosmetic.Cosmetic;
 import dev.hardaway.wardrobe.api.cosmetic.WardrobeCosmeticSlot;
 import dev.hardaway.wardrobe.api.player.PlayerCosmetic;
 import dev.hardaway.wardrobe.api.player.PlayerWardrobe;
 import dev.hardaway.wardrobe.impl.cosmetic.CosmeticAsset;
 import dev.hardaway.wardrobe.impl.cosmetic.CosmeticSlotAsset;
+import dev.hardaway.wardrobe.impl.cosmetic.ModelAttachmentCosmetic;
 import dev.hardaway.wardrobe.impl.cosmetic.builtin.HytaleCosmetic;
 import dev.hardaway.wardrobe.impl.cosmetic.builtin.HytalePlayerCosmetic;
 
@@ -113,6 +115,8 @@ public class PlayerWardrobeSystems {
                 }
             }
 
+            Map<String, ModelAttachmentCosmetic> applyAfter = new HashMap<>();
+
             // Apply custom cosmetics
             context.getCosmeticMap().forEach((slotId, cosmetic) -> {
                 WardrobeCosmeticSlot slot = slots.get(slotId); // TODO: replace with registry
@@ -125,10 +129,30 @@ public class PlayerWardrobeSystems {
 
                         cosmeticData = new HytalePlayerCosmetic(part);
                     }
-
-                    cosmetic.applyCosmetic(context, slot, cosmeticData);
+                    if (cosmetic instanceof ModelAttachmentCosmetic modelAttachmentCosmetic) {
+                        if (modelAttachmentCosmetic.getAppearance().getTextureConfig(null).getGradientFrom() != null) {
+                            applyAfter.put(slotId, modelAttachmentCosmetic);
+                            return;
+                        }
+                    }
+                    cosmetic.applyCosmetic(context, slot, cosmeticData, null, null);
                 }
             });
+
+            for (String slotId : applyAfter.keySet()) {
+                ModelAttachmentCosmetic cosmetic = applyAfter.get(slotId);
+                String gradientFrom = cosmetic.getAppearance().getTextureConfig(null).getGradientFrom();
+                Cosmetic gradientFromCosmetic = context.getCosmeticMap().get(gradientFrom);
+                PlayerCosmetic gradientFromPlayerCosmetic = context.getCosmetic(gradientFrom);
+                if (gradientFromCosmetic == null || gradientFromPlayerCosmetic == null) continue;
+                WardrobeCosmeticSlot slot = slots.get(slotId); // TODO: replace with registry
+                if (slot != null) {
+                    // TODO: validate & warn
+                    String gradientId = gradientFromPlayerCosmetic.getVariantId();
+                    PlayerCosmetic cosmeticData = wardrobeComponent.getCosmetic(slotId);
+                    cosmetic.applyCosmetic(context, slot, cosmeticData, null, gradientId);
+                }
+            }
 
             // Handle armor hiding
             Set<CosmeticType> hiddenHytaleSlots = new HashSet<>();

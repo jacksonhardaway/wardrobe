@@ -44,11 +44,9 @@ public class HytaleCosmetic implements Cosmetic {
     }
 
     @Nullable
-    protected ModelAttachment createAttachment(WardrobeContext context, WardrobeCosmeticSlot slot, PlayerCosmetic playerCosmetic) {
+    protected ModelAttachment createAttachment(WardrobeContext context, WardrobeCosmeticSlot slot, PlayerCosmetic playerCosmetic, @Nullable String gradientSet, @Nullable String gradientId) {
         String model;
         String texture;
-        @Nullable String gradientSet = null;
-        @Nullable String gradientId = null;
 
         if (!this.variantMap.isEmpty()) {
             PlayerSkinPart.Variant variant = this.variantMap.get(playerCosmetic.getOptionId());
@@ -63,8 +61,8 @@ public class HytaleCosmetic implements Cosmetic {
                 texture = partTexture.getTexture();
             } else {
                 texture = variant.getGreyscaleTexture();
-                gradientSet = this.part.getGradientSet();
-                gradientId = playerCosmetic.getVariantId();
+                gradientSet = gradientSet == null ? this.part.getGradientSet() : gradientSet;
+                gradientId = gradientId == null ? playerCosmetic.getVariantId() : gradientId;
             }
         } else {
             model = this.part.getModel();
@@ -76,8 +74,8 @@ public class HytaleCosmetic implements Cosmetic {
                 texture = partTexture.getTexture();
             } else {
                 texture = this.part.getGreyscaleTexture();
-                gradientSet = this.part.getGradientSet();
-                gradientId = playerCosmetic.getVariantId();
+                gradientSet = gradientSet == null ? this.part.getGradientSet() : gradientSet;
+                gradientId = gradientId == null ? playerCosmetic.getVariantId() : gradientId;
             }
         }
 
@@ -95,8 +93,8 @@ public class HytaleCosmetic implements Cosmetic {
     }
 
     @Override
-    public void applyCosmetic(WardrobeContext context, WardrobeCosmeticSlot slot, PlayerCosmetic playerCosmetic) {
-        ModelAttachment attachment = this.createAttachment(context, slot, playerCosmetic);
+    public void applyCosmetic(WardrobeContext context, WardrobeCosmeticSlot slot, PlayerCosmetic playerCosmetic, @Nullable String gradientSet, @Nullable String gradientId) {
+        ModelAttachment attachment = this.createAttachment(context, slot, playerCosmetic, gradientSet, gradientId);
         if (attachment == null) return;
         // TODO: warn?
         context.addAttachment(slot.getId(), attachment);

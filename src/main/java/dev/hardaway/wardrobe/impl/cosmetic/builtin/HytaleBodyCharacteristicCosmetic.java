@@ -7,13 +7,15 @@ import dev.hardaway.wardrobe.api.cosmetic.WardrobeContext;
 import dev.hardaway.wardrobe.api.cosmetic.WardrobeCosmeticSlot;
 import dev.hardaway.wardrobe.api.player.PlayerCosmetic;
 
+import javax.annotation.Nullable;
+
 public class HytaleBodyCharacteristicCosmetic extends HytaleCosmetic {
     public HytaleBodyCharacteristicCosmetic(CosmeticType type, PlayerSkinPart part) {
         super(type, part);
     }
 
     @Override
-    public void applyCosmetic(WardrobeContext context, WardrobeCosmeticSlot slot, PlayerCosmetic playerCosmetic) {
+    public void applyCosmetic(WardrobeContext context, WardrobeCosmeticSlot slot, PlayerCosmetic playerCosmetic, @Nullable String gradientSet, @Nullable String gradientId) {
         Model model = context.getPlayerModel();
         context.setPlayerModel(new Model(
                 model.getModelAssetId(),
@@ -23,8 +25,8 @@ public class HytaleBodyCharacteristicCosmetic extends HytaleCosmetic {
                 model.getBoundingBox(),
                 this.getPart().getModel(),
                 this.getPart().getGreyscaleTexture(),
-                this.getPart().getGradientSet(),
-                playerCosmetic.getVariantId(),
+                gradientSet == null ? this.getPart().getGradientSet() : gradientSet,
+                gradientId == null ? playerCosmetic.getVariantId() : gradientId,
                 model.getEyeHeight(),
                 model.getCrouchOffset(),
                 model.getSittingOffset(),

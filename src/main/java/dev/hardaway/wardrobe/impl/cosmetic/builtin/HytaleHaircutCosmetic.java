@@ -11,6 +11,7 @@ import dev.hardaway.wardrobe.api.cosmetic.WardrobeCosmeticSlot;
 import dev.hardaway.wardrobe.api.player.PlayerCosmetic;
 import dev.hardaway.wardrobe.impl.cosmetic.ModelAttachmentCosmetic;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class HytaleHaircutCosmetic extends HytaleCosmetic {
@@ -19,8 +20,8 @@ public class HytaleHaircutCosmetic extends HytaleCosmetic {
     }
 
     @Override
-    protected ModelAttachment createAttachment(WardrobeContext context, WardrobeCosmeticSlot slot, PlayerCosmetic playerCosmetic) {
-        ModelAttachment attachment = super.createAttachment(context, slot, playerCosmetic);
+    protected ModelAttachment createAttachment(WardrobeContext context, WardrobeCosmeticSlot slot, PlayerCosmetic playerCosmetic, @Nullable String gradientSet, @Nullable String gradientId) {
+        ModelAttachment attachment = super.createAttachment(context, slot, playerCosmetic, gradientSet, gradientId);
         if (attachment == null) return null;
 
         CosmeticRegistry cosmeticRegistry = CosmeticsModule.get().getRegistry();

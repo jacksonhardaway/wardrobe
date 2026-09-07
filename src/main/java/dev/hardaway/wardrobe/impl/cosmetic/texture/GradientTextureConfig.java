@@ -26,6 +26,14 @@ public class GradientTextureConfig implements TextureConfig {
             .metadata(new UIPropertyTitle("Gradient Set")).documentation("The Gradient Set determines which colors appear under the 'Variants' section in the Wardrobe Menu.")
             .add()
 
+            .append(new KeyedCodec<>("GradientFrom", Codec.STRING, true),
+                    (t, value) -> t.gradientFrom = value,
+                    t -> t.gradientFrom
+            )
+            // .addValidator(CommonAssetValidator.TEXTURE_CHARACTER_ATTACHMENT) // TODO: Create validator
+            .metadata(new UIPropertyTitle("Gradient From")).documentation("The slot to take the gradient and color from.")
+            .add()
+
             .append(new KeyedCodec<>("GrayscaleTexture", Codec.STRING, true),
                     (t, value) -> t.grayscaleTexture = value,
                     t -> t.grayscaleTexture
@@ -37,13 +45,15 @@ public class GradientTextureConfig implements TextureConfig {
             .build();
 
     private String gradientSet;
+    private String gradientFrom;
     private String grayscaleTexture;
 
     private GradientTextureConfig() {
     }
 
-    public GradientTextureConfig(String gradientSet, String grayscaleTexture) {
+    public GradientTextureConfig(String gradientSet, String gradientFrom, String grayscaleTexture) {
         this.gradientSet = gradientSet;
+        this.gradientFrom = gradientFrom;
         this.grayscaleTexture = grayscaleTexture;
     }
 
@@ -57,6 +67,12 @@ public class GradientTextureConfig implements TextureConfig {
     @Override
     public String getGradientSet() {
         return gradientSet;
+    }
+
+    @Nonnull
+    @Override
+    public String getGradientFrom() {
+        return gradientFrom;
     }
 
     @Override
